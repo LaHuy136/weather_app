@@ -8,7 +8,8 @@ import 'package:weather_app/theme/text_styles.dart';
 import 'package:weather_app/theme/weather_color_styles.dart';
 
 class WeeklyScreen extends StatefulWidget {
-  const WeeklyScreen({super.key});
+  final String city;
+  const WeeklyScreen({super.key, required this.city});
 
   @override
   State<WeeklyScreen> createState() => _WeeklyScreenState();
@@ -26,7 +27,7 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
 
   Future<void> fetchWeeklyWeather() async {
     try {
-      final data = await WeatherApi.getDailyWeather('Montreal');
+      final data = await WeatherAPI.getDailyWeather(widget.city);
       setState(() {
         weeklyData = data;
         isLoading = false;
@@ -63,68 +64,79 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
 
     return SizedBox(
       height: 80,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: weeklyData.length,
-        itemBuilder: (context, index) {
-          final item = weeklyData[index];
+      child:
+          weeklyData.isEmpty
+              ? const Center(
+                child: Text('No data available', style: TextStyles.caption1),
+              )
+              : ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: weeklyData.length,
+                itemBuilder: (context, index) {
+                  final item = weeklyData[index];
 
-          final dateStr = item['date'];
-          final isNow = isToday(dateStr);
+                  final dateStr = item['date'];
+                  final isNow = isToday(dateStr);
 
-          final day = isNow ? 'NOW' : getShortWeekday(item['weekday']);
-          final temp = item['temperature'].floor();
-          final humidity = item['humidity'];
-          final description = item['description'];
+                  final day = isNow ? 'Now' : getShortWeekday(item['weekday']);
+                  final temp = item['temperature'].floor();
+                  final humidity = item['humidity'];
+                  final description = item['description'];
 
-          return SizedBox(
-            width: 100,
-            height: 80,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 32),
-              decoration: BoxDecoration(
-                color:
-                    isNow
-                        ? WeatherColorStyles.focusedContainer.withOpacity(0.9)
-                        : WeatherColorStyles.container,
-                borderRadius: BorderRadius.circular(56),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  // Weekday
-                  Text(day, style: TextStyles.body),
-
-                  // Weather icon
-                  Column(
-                    children: [
-                      SvgPicture.asset(
-                        getWeatherIconPath(description),
-                        width: 32,
-                        height: 32,
-                        color: ColorStyles.primary,
+                  return SizedBox(
+                    width: 100,
+                    height: 80,
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.only(
+                        right: 12,
+                        bottom: 45,
+                        top: 28,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '$humidity%',
-                        style: TextStyles.caption2.copyWith(
-                          color: Colors.white,
-                        ),
+                      decoration: BoxDecoration(
+                        color:
+                            isNow
+                                ? WeatherColorStyles.focusedContainer
+                                    .withOpacity(0.9)
+                                : WeatherColorStyles.container,
+                        borderRadius: BorderRadius.circular(56),
                       ),
-                    ],
-                  ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Weekday
+                          Text(day, style: TextStyles.body),
 
-                  // Temperature
-                  Text('$temp°C', style: TextStyles.body),
-                ],
+                          // Weather icon
+                          Column(
+                            children: [
+                              SvgPicture.asset(
+                                getWeatherIconPath(description),
+                                width: 32,
+                                height: 32,
+                                color: ColorStyles.primary,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '$humidity%',
+                                style: TextStyles.body.copyWith(
+                                  color:
+                                      WeatherColorStyles.textWeatherCondition,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          // Temperature
+                          Text('$temp°C', style: TextStyles.caption2),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
-            ),
-          );
-        },
-      ),
     );
   }
 
@@ -148,7 +160,7 @@ class _WeeklyScreenState extends State<WeeklyScreen> {
         description.contains('moderate rain')) {
       return 'assets/icons/light-rain.svg';
     } else if (description.contains('rain')) {
-      return 'assets/icons/rain.svg';
+      return 'assets/icons/rainy.svg';
     }
     return 'assets/icons/moon-cloud-mid-rain.svg';
   }

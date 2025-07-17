@@ -60,14 +60,14 @@ class TextStyles {
   );
 
   static const TextStyle callOut = TextStyle(
-    fontSize: 15,
+    fontSize: 30,
     fontWeight: FontWeight.w400,
     fontFamily: 'Poppins',
     color: ColorStyles.primary,
   );
 
   static const TextStyle callOutBold = TextStyle(
-    fontSize: 15,
+    fontSize: 30,
     fontWeight: FontWeight.bold,
     fontFamily: 'Poppins',
     color: ColorStyles.primary,
