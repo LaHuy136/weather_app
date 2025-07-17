@@ -1,8 +1,19 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class WeatherApi {
+class WeatherAPI {
   static const String baseUrl = 'http://192.168.38.126:3000/weather'; //
+
+  static Future<Map<String, dynamic>> getCurrentWeather(String city) async {
+    final url = Uri.parse('$baseUrl/current?city=$city');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('City not found or invalid data');
+    }
+  }
 
   static Future<List<dynamic>> getHourlyWeather(String city) async {
     final uri = Uri.parse('$baseUrl/hourly?city=$city&cnt=24');
@@ -10,7 +21,7 @@ class WeatherApi {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
-      return data['forecast']; //
+      return data['forecast'];
     } else {
       throw Exception('Failed to load hourly weather');
     }

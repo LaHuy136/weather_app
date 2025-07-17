@@ -8,7 +8,8 @@ import 'package:weather_app/theme/text_styles.dart';
 import 'package:weather_app/theme/weather_color_styles.dart';
 
 class HourlyScreen extends StatefulWidget {
-  const HourlyScreen({super.key});
+  final String city;
+  const HourlyScreen({super.key, required this.city});
 
   @override
   State<HourlyScreen> createState() => _HourlyScreenState();
@@ -27,7 +28,7 @@ class _HourlyScreenState extends State<HourlyScreen> {
 
   Future<void> fetchHourlyWeather() async {
     try {
-      final data = await WeatherApi.getHourlyWeather('Montreal');
+      final data = await WeatherAPI.getHourlyWeather(widget.city);
 
       final currentHour = DateTime.now().hour;
       int closestDiff = 24;
@@ -69,74 +70,86 @@ class _HourlyScreenState extends State<HourlyScreen> {
 
     return SizedBox(
       height: 80,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: hourlyData.length,
-        itemBuilder: (context, index) {
-          final item = hourlyData[index];
-          final description = item['description'];
+      child:
+          hourlyData.isEmpty
+              ? const Center(
+                child: Text('No data available', style: TextStyles.caption1),
+              )
+              : ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: hourlyData.length,
+                itemBuilder: (context, index) {
+                  final item = hourlyData[index];
+                  final description = item['description'];
 
-          final isNow = index == nowIndex;
+                  final isNow = index == nowIndex;
 
-          String getDisplayTime(String? rawTime) {
-            if (rawTime == null) return '--';
+                  String getDisplayTime(String? rawTime) {
+                    if (rawTime == null) return '--';
 
-            final hour = int.tryParse(rawTime.split(':')[0]) ?? 0;
-            final amPm = hour < 12 ? 'AM' : 'PM';
-            final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
-            return '$displayHour $amPm';
-          }
+                    final hour = int.tryParse(rawTime.split(':')[0]) ?? 0;
+                    final amPm = hour < 12 ? 'AM' : 'PM';
+                    final displayHour =
+                        hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
+                    return '$displayHour $amPm';
+                  }
 
-          final time = isNow ? 'NOW' : getDisplayTime(item['time']);
+                  final time = isNow ? 'Now' : getDisplayTime(item['time']);
 
-          final temp = item['temperature'].floor();
-          final humidity = item['humidity'].toString();
+                  final temp = item['temperature'].floor();
+                  final humidity = item['humidity'].toString();
 
-          return SizedBox(
-            width: 100,
-            height: 80,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 32),
-              decoration: BoxDecoration(
-                color:
-                    isNow
-                        ? WeatherColorStyles.focusedContainer.withOpacity(0.9)
-                        : WeatherColorStyles.container,
-                borderRadius: BorderRadius.circular(56),
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(time, style: TextStyles.caption2),
-                  const SizedBox(height: 8),
-                  Column(
-                    children: [
-                      SvgPicture.asset(
-                        getWeatherIconPath(description),
-                        width: 32,
-                        height: 32,
-                        color: ColorStyles.primary,
+                  return SizedBox(
+                    width: 100,
+                    height: 80,
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.only(
+                        right: 12,
+                        bottom: 45,
+                        top: 28,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '$humidity%',
-                        style: TextStyles.caption2.copyWith(
-                          color: WeatherColorStyles.textWeatherCondition,
-                        ),
+                      decoration: BoxDecoration(
+                        color:
+                            isNow
+                                ? WeatherColorStyles.focusedContainer
+                                    .withOpacity(0.9)
+                                : WeatherColorStyles.container,
+                        borderRadius: BorderRadius.circular(56),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text('$temp°C', style: TextStyles.caption2),
-                ],
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(time, style: TextStyles.caption2),
+                          const SizedBox(height: 8),
+                          Column(
+                            children: [
+                              SvgPicture.asset(
+                                getWeatherIconPath(description),
+                                width: 32,
+                                height: 32,
+                                color: ColorStyles.primary,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '$humidity%',
+                                style: TextStyles.body.copyWith(
+                                  color:
+                                      WeatherColorStyles.textWeatherCondition,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text('$temp°C', style: TextStyles.caption2),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
-            ),
-          );
-        },
-      ),
     );
   }
 
@@ -156,15 +169,7 @@ class _HourlyScreenState extends State<HourlyScreen> {
         description.contains('moderate rain')) {
       return 'assets/icons/light-rain.svg';
     } else if (description.contains('rain')) {
-      return 'assets/icons/rain.svg';
-      // } else if (description.contains('thunderstorm')) {
-      //   return 'assets/icons/cloud-lightning.svg';
-      // } else if (description.contains('snow')) {
-      //   return 'assets/icons/cloud-snow.svg';
-      // } else if (description.contains('mist') ||
-      //     description.contains('fog') ||
-      //     description.contains('haze')) {
-      //   return 'assets/icons/cloud-fog.svg';
+      return 'assets/icons/rainy.svg';
     }
 
     return 'assets/icons/cloud-fast-wind.svg';
