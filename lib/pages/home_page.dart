@@ -211,22 +211,42 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: Container(
                   padding: const EdgeInsets.all(16),
-                  color: WeatherColorStyles.container.withOpacity(0.9),
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      colors: [
+                        WeatherColorStyles.linear1.withOpacity(0.9),
+                        WeatherColorStyles.linear11.withOpacity(0.9),
+                      ],
+                    ),
+                  ),
                   child: Align(
                     alignment: Alignment.bottomCenter,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          color: WeatherColorStyles.container.withOpacity(0.1),
+                          decoration: BoxDecoration(
+                            gradient: RadialGradient(
+                              colors: [
+                                WeatherColorStyles.linear1.withOpacity(0.1),
+                                WeatherColorStyles.linear11.withOpacity(0.2),
+                              ],
+                            ),
+                          ),
                           child: TabBar(
-                            indicatorColor: WeatherColorStyles.quanternary
-                                .withOpacity(0.3),
+                            indicatorColor: WeatherColorStyles.linear4
+                                .withOpacity(0.8),
+                            indicatorSize: TabBarIndicatorSize.tab,
+                            indicatorWeight: 2.5,
                             labelColor: ColorStyles.text,
                             unselectedLabelColor: ColorStyles.text,
-                            dividerColor: WeatherColorStyles.quanternary
-                                .withOpacity(0.2),
-                            labelStyle: TextStyle(color: ColorStyles.text),
+                            dividerColor: WeatherColorStyles.linear4
+                                .withOpacity(0.1),
+                            labelStyle: TextStyle(
+                              color: ColorStyles.text,
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.w600,
+                            ),
                             tabs: const [
                               Tab(text: 'Hourly Forecast'),
                               Tab(text: 'Weekly Forecast'),

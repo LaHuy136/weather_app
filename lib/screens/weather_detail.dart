@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, deprecated_member_use
+// ignore_for_file: use_build_context_synchronously, deprecated_member_use, control_flow_in_finally
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -32,16 +32,19 @@ class _WeatherDetailState extends State<WeatherDetail> {
 
   Future<void> fetchWeather() async {
     try {
+      if (!mounted) return;
       setState(() {
         isLoading = true;
       });
 
       final data = await WeatherAPI.getCurrentWeather(selectedCity);
 
+      if (!mounted) return;
       setState(() {
         currentWeather = data;
       });
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error fetching weather data: $e'),
@@ -49,6 +52,7 @@ class _WeatherDetailState extends State<WeatherDetail> {
         ),
       );
     } finally {
+      if (!mounted) return;
       setState(() => isLoading = false);
     }
   }
@@ -73,7 +77,7 @@ class _WeatherDetailState extends State<WeatherDetail> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: WeatherColorStyles.linear2.withOpacity(0.7),
+        backgroundColor: WeatherColorStyles.linear1.withOpacity(0.9),
         body:
             isLoading
                 ? const Center(
@@ -122,22 +126,41 @@ class _WeatherDetailState extends State<WeatherDetail> {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: WeatherColorStyles.container.withOpacity(0.6),
+                          gradient: RadialGradient(
+                            colors: [
+                              WeatherColorStyles.linear1.withOpacity(0.1),
+                              WeatherColorStyles.linear11.withOpacity(0.2),
+                            ],
+                          ),
                           borderRadius: BorderRadius.circular(24),
                         ),
                         child: Column(
                           children: [
                             Container(
-                              color: WeatherColorStyles.container.withOpacity(
-                                0.1,
+                              decoration: BoxDecoration(
+                                gradient: RadialGradient(
+                                  colors: [
+                                    WeatherColorStyles.linear1.withOpacity(0.1),
+                                    WeatherColorStyles.linear11.withOpacity(
+                                      0.1,
+                                    ),
+                                  ],
+                                ),
                               ),
                               child: TabBar(
-                                indicatorColor: WeatherColorStyles.quanternary
-                                    .withOpacity(0.3),
+                                indicatorColor: WeatherColorStyles.linear4
+                                    .withOpacity(0.8),
+                                indicatorSize: TabBarIndicatorSize.tab,
+                                indicatorWeight: 2.5,
                                 labelColor: ColorStyles.text,
                                 unselectedLabelColor: ColorStyles.text,
-                                dividerColor: WeatherColorStyles.quanternary
-                                    .withOpacity(0.2),
+                                dividerColor: WeatherColorStyles.linear4
+                                    .withOpacity(0.1),
+                                labelStyle: TextStyle(
+                                  color: ColorStyles.text,
+                                  fontFamily: 'Poppins',
+                                  fontWeight: FontWeight.w600,
+                                ),
                                 tabs: const [
                                   Tab(text: 'Hourly Forecast'),
                                   Tab(text: 'Weekly Forecast'),
@@ -294,7 +317,14 @@ Widget buildWeatherDetailItem(
     child: Container(
       height: 200,
       padding: const EdgeInsets.all(16),
-      color: ColorStyles.container.withOpacity(0.6),
+      decoration: BoxDecoration(
+        gradient: RadialGradient(
+          colors: [
+            WeatherColorStyles.linear1.withOpacity(0.7),
+            WeatherColorStyles.linear11.withOpacity(0.6),
+          ],
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -341,7 +371,14 @@ Widget buildPressureItem(num pressure) {
       child: Container(
         height: 200,
         padding: const EdgeInsets.all(16),
-        color: ColorStyles.container.withOpacity(0.6),
+        decoration: BoxDecoration(
+          gradient: RadialGradient(
+            colors: [
+              WeatherColorStyles.linear1.withOpacity(0.7),
+              WeatherColorStyles.linear11.withOpacity(0.6),
+            ],
+          ),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
