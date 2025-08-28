@@ -1,7 +1,7 @@
 # 📱 Weather App Frontend (Flutter)
 
 Đây là **ứng dụng Flutter** cho Weather App.  
-Ứng dụng kết nối với **RESTful backend (Node.js)** để quản lý công việc cá nhân.
+Ứng dụng kết nối với **RESTful backend (Node.js)** để xem thông tin thời tiết.
 
 ---
 
@@ -40,4 +40,5 @@ flutter pub get
 ```dart
 const String baseUrl = "http://<BACKEND_IP>:3000";
 ```
+
 
